@@ -157,7 +157,7 @@
 
   <!-- JavaScript -->
   <script>
-    const apiKey = '479311d0dcvg6ah7elsybz'; // Replace with your API key
+    const apiKey = '479311d0dcvg6ah7elsybz'; // Your DoodStream API key
     const videoGrid = document.getElementById('videoGrid');
 
     // Fetch videos from DoodStream API
@@ -197,16 +197,14 @@
     // Search videos
     function searchVideos() {
       const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-      fetchVideos().then(() => {
-        const videos = document.querySelectorAll('.video-card');
-        videos.forEach(video => {
-          const title = video.querySelector('h3').textContent.toLowerCase();
-          if (title.includes(searchTerm)) {
-            video.style.display = 'block';
-          } else {
-            video.style.display = 'none';
-          }
-        });
+      const videos = document.querySelectorAll('.video-card');
+      videos.forEach(video => {
+        const title = video.querySelector('h3').textContent.toLowerCase();
+        if (title.includes(searchTerm)) {
+          video.style.display = 'block';
+        } else {
+          video.style.display = 'none';
+        }
       });
     }
 
