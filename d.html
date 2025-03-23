@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced Video Player</title>
+    <title>Advanced Video Player with Thumbnails</title>
     <style>
         /* Gradient background and basic reset */
         body {
@@ -61,14 +61,28 @@
         #saved-videos li {
             background: rgba(255, 255, 255, 0.1);
             margin: 10px 0;
-            padding: 15px;
+            padding: 10px;
             border-radius: 8px;
             cursor: pointer;
             transition: background 0.3s ease;
+            display: flex;
+            align-items: center;
         }
 
         #saved-videos li:hover {
             background: rgba(255, 255, 255, 0.2);
+        }
+
+        .thumbnail {
+            width: 120px;
+            height: 90px;
+            border-radius: 8px;
+            margin-right: 15px;
+            object-fit: cover;
+        }
+
+        .video-title {
+            font-size: 1.1rem;
         }
 
         /* Add video section */
@@ -112,12 +126,21 @@
             h1 {
                 font-size: 2rem;
             }
+
+            .thumbnail {
+                width: 80px;
+                height: 60px;
+            }
+
+            .video-title {
+                font-size: 1rem;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Advanced Video Player</h1>
+        <h1>Advanced Video Player with Thumbnails</h1>
 
         <!-- Video Player -->
         <div class="video-player">
@@ -161,12 +184,26 @@
         const addVideoBtn = document.getElementById('add-video-btn');
         const savedVideosList = document.getElementById('saved-videos');
 
-        // Function to update the saved videos list
+        // Function to extract video ID from YouTube URL
+        function getYouTubeThumbnail(url) {
+            const regExp = /^.*(youtu.be\/|v\/|e\/|u\/\w+\/|embed\/|v=)([^#\&\?]*).*/;
+            const match = url.match(regExp);
+            if (match && match[2].length === 11) {
+                return `https://img.youtube.com/vi/${match[2]}/0.jpg`;
+            }
+            return null;
+        }
+
+        // Function to update the saved videos list with thumbnails
         function updateSavedVideosList() {
             savedVideosList.innerHTML = '';
             savedVideos.forEach((video, index) => {
                 const li = document.createElement('li');
-                li.textContent = `Video ${index + 1}`;
+                const thumbnailUrl = getYouTubeThumbnail(video) || 'https://via.placeholder.com/120x90?text=No+Thumbnail';
+                li.innerHTML = `
+                    <img class="thumbnail" src="${thumbnailUrl}" alt="Thumbnail">
+                    <span class="video-title">Video ${index + 1}</span>
+                `;
                 li.addEventListener('click', () => {
                     mainVideo.src = video;
                 });
