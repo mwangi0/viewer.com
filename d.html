@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced Video Player with Thumbnails</title>
+    <title>Advanced Video Player with Pop-Up Player</title>
     <style>
         /* Gradient background and basic reset */
         body {
@@ -33,19 +33,6 @@
             text-align: center;
             font-size: 2.5rem;
             margin-bottom: 20px;
-        }
-
-        /* Video player section */
-        .video-player {
-            margin-bottom: 30px;
-            text-align: center;
-        }
-
-        #main-video {
-            width: 100%;
-            height: 500px;
-            border-radius: 10px;
-            border: 2px solid rgba(255, 255, 255, 0.2);
         }
 
         /* Saved videos list */
@@ -117,12 +104,56 @@
             background: #1b5bbf;
         }
 
+        /* Pop-up video player */
+        .popup-player {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            max-width: 800px;
+            background: rgba(0, 0, 0, 0.9);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 0 25px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .popup-player.active {
+            display: block;
+        }
+
+        .popup-player iframe {
+            width: 100%;
+            height: 400px;
+            border-radius: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #ff4d4d;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-btn:hover {
+            background: #e60000;
+        }
+
         /* Responsive design */
         @media (max-width: 768px) {
-            #main-video {
-                height: 300px;
-            }
-
             h1 {
                 font-size: 2rem;
             }
@@ -135,17 +166,16 @@
             .video-title {
                 font-size: 1rem;
             }
+
+            .popup-player iframe {
+                height: 300px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Advanced Video Player with Thumbnails</h1>
-
-        <!-- Video Player -->
-        <div class="video-player">
-            <iframe id="main-video" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-        </div>
+        <h1>Advanced Video Player with Pop-Up Player</h1>
 
         <!-- Saved Videos List -->
         <div class="video-list">
@@ -156,30 +186,31 @@
         <!-- Add Video Section -->
         <div class="add-video">
             <h2>Add a Video</h2>
-            <input type="text" id="video-url" placeholder="Enter video URL or embed code">
+            <input type="text" id="video-url" placeholder="Enter video URL, embed code, or name">
             <button id="add-video-btn">Add Video</button>
         </div>
+    </div>
+
+    <!-- Pop-up Video Player -->
+    <div class="popup-player">
+        <button class="close-btn">&times;</button>
+        <iframe id="popup-video" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
     </div>
 
     <script>
         // Preloaded embedded links
         let savedVideos = [
-            "https://do7go.com/e/whv3lhsnojkc",
-            "https://do7go.com/e/0y9sknipzic8",
-            "https://do7go.com/e/zzbge96phjd4",
-            "https://do7go.com/e/fi08t1qdcnw2",
-            "https://do7go.com/e/04k52uele17f",
-            "https://do7go.com/e/uwdbt45j54s3",
-            "https://do7go.com/e/1ri83ssob6x3",
-            "https://do7go.com/e/hxmavh7ou1ie",
-            "https://do7go.com/e/jsaanao2frxr"
+            { url: "https://www.youtube.com/embed/ZuCnKQZ7_AE", name: "Sample Video 1" },
+            { url: "https://www.youtube.com/embed/dQw4w9WgXcQ", name: "Sample Video 2" }
         ];
 
         // Save preloaded videos to localStorage
         localStorage.setItem('savedVideos', JSON.stringify(savedVideos));
 
         // DOM Elements
-        const mainVideo = document.getElementById('main-video');
+        const popupPlayer = document.querySelector('.popup-player');
+        const popupVideo = document.getElementById('popup-video');
+        const closeBtn = document.querySelector('.close-btn');
         const videoUrlInput = document.getElementById('video-url');
         const addVideoBtn = document.getElementById('add-video-btn');
         const savedVideosList = document.getElementById('saved-videos');
@@ -199,13 +230,14 @@
             savedVideosList.innerHTML = '';
             savedVideos.forEach((video, index) => {
                 const li = document.createElement('li');
-                const thumbnailUrl = getYouTubeThumbnail(video) || 'https://via.placeholder.com/120x90?text=No+Thumbnail';
+                const thumbnailUrl = getYouTubeThumbnail(video.url) || 'https://via.placeholder.com/120x90?text=No+Thumbnail';
                 li.innerHTML = `
                     <img class="thumbnail" src="${thumbnailUrl}" alt="Thumbnail">
-                    <span class="video-title">Video ${index + 1}</span>
+                    <span class="video-title">${video.name || `Video ${index + 1}`}</span>
                 `;
                 li.addEventListener('click', () => {
-                    mainVideo.src = video;
+                    popupVideo.src = video.url;
+                    popupPlayer.classList.add('active');
                 });
                 savedVideosList.appendChild(li);
             });
@@ -213,26 +245,48 @@
 
         // Function to add a new video
         function addVideo() {
-            const videoUrl = videoUrlInput.value.trim();
-            if (videoUrl) {
-                savedVideos.push(videoUrl);
+            const input = videoUrlInput.value.trim();
+            if (input) {
+                let videoUrl = input;
+                let videoName = '';
+
+                // Check if input is an iframe embed code
+                if (input.startsWith('<iframe')) {
+                    const srcMatch = input.match(/src="([^"]+)"/);
+                    if (srcMatch) {
+                        videoUrl = srcMatch[1];
+                    }
+                }
+
+                // Check if input contains a name (e.g., "Video Name|https://example.com")
+                if (input.includes('|')) {
+                    const parts = input.split('|');
+                    videoName = parts[0].trim();
+                    videoUrl = parts[1].trim();
+                }
+
+                savedVideos.push({ url: videoUrl, name: videoName });
                 localStorage.setItem('savedVideos', JSON.stringify(savedVideos));
                 updateSavedVideosList();
                 videoUrlInput.value = '';
             } else {
-                alert('Please enter a valid video URL or embed code.');
+                alert('Please enter a valid video URL, embed code, or name.');
             }
         }
 
         // Event listener for the add video button
         addVideoBtn.addEventListener('click', addVideo);
 
+        // Close pop-up player
+        closeBtn.addEventListener('click', () => {
+            popupPlayer.classList.remove('active');
+            popupVideo.src = ''; // Stop the video
+        });
+
         // Load saved videos when the page loads
         window.addEventListener('load', () => {
+            savedVideos = JSON.parse(localStorage.getItem('savedVideos')) || [];
             updateSavedVideosList();
-            if (savedVideos.length > 0) {
-                mainVideo.src = savedVideos[0];
-            }
         });
     </script>
 </body>
