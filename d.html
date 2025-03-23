@@ -122,6 +122,36 @@
       background-color: #ff4c4c;
     }
 
+    .video-player {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.9);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      display: none;
+    }
+
+    .video-player iframe {
+      width: 80%;
+      height: 80%;
+      border: none;
+      border-radius: 10px;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      font-size: 2rem;
+      color: #ffffff;
+      cursor: pointer;
+    }
+
     .footer {
       text-align: center;
       margin-top: 40px;
@@ -155,10 +185,18 @@
     <p>Powered by <a href="https://doodstream.com" target="_blank">DoodStream API</a></p>
   </div>
 
+  <!-- Video Player -->
+  <div class="video-player" id="videoPlayer">
+    <span class="close-btn" onclick="closeVideoPlayer()">&times;</span>
+    <iframe id="playerFrame" src="" allowfullscreen></iframe>
+  </div>
+
   <!-- JavaScript -->
   <script>
     const apiKey = '479311d0dcvg6ah7elsybz'; // Your DoodStream API key
     const videoGrid = document.getElementById('videoGrid');
+    const videoPlayer = document.getElementById('videoPlayer');
+    const playerFrame = document.getElementById('playerFrame');
 
     // Fetch videos from DoodStream API
     async function fetchVideos() {
@@ -187,11 +225,23 @@
             <h3>${video.title}</h3>
             <p>Uploaded: ${video.uploaded}</p>
             <p>Views: ${video.views}</p>
-            <a href="${video.download_url}" target="_blank">Watch Now</a>
+            <a href="#" onclick="playVideo('${video.download_url}')">Watch Now</a>
           </div>
         `;
         videoGrid.appendChild(videoCard);
       });
+    }
+
+    // Play video in the player
+    function playVideo(url) {
+      playerFrame.src = url;
+      videoPlayer.style.display = 'flex';
+    }
+
+    // Close video player
+    function closeVideoPlayer() {
+      playerFrame.src = '';
+      videoPlayer.style.display = 'none';
     }
 
     // Search videos
