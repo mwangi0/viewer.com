@@ -1,0 +1,23 @@
+body {
+  background: linear-gradient(-45deg, orange, white , black);
+  animation: infinite 
+ 
+  
+
+  }
+  h1 {
+    color: blue;
+    font-family: cursive;
+    font-size: larger;
+    font-style: inherit;
+    animation: forwards;
+    
+  
+  }
+  h2{color: coral;
+    font-family: sans-serif;
+    font-size: larger;
+    font-style: unset;
+    border-left: 03cm;
+
+  }
