@@ -203,10 +203,11 @@
       try {
         const response = await fetch(`https://doodapi.com/api/file/list?key=${apiKey}`);
         const data = await response.json();
-        if (data.status === 200) {
+        console.log('API Response:', data); // Debugging: Log API response
+        if (data.status === 200 && data.result && data.result.files) {
           displayVideos(data.result.files);
         } else {
-          console.error('Error fetching videos:', data.msg);
+          console.error('Error fetching videos:', data.msg || 'No files found');
         }
       } catch (error) {
         console.error('Error:', error);
@@ -216,6 +217,10 @@
     // Display videos on the page
     function displayVideos(videos) {
       videoGrid.innerHTML = ''; // Clear existing content
+      if (videos.length === 0) {
+        videoGrid.innerHTML = '<p>No videos found.</p>'; // Show message if no videos
+        return;
+      }
       videos.forEach(video => {
         const videoCard = document.createElement('div');
         videoCard.className = 'video-card';
