@@ -1,350 +1,189 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DoodStream Video Gallery</title>
-  <style>
-    /* Modern CSS Reset */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Video Player</title>
+    <style>
+        /* Gradient background and basic reset */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
 
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #1a1a1a;
-      color: #ffffff;
-      line-height: 1.6;
-    }
+        /* Main container */
+        .container {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 1200px;
+            box-shadow: 0 0 25px rgba(0, 0, 0, 0.5);
+        }
 
-    header {
-      background-color: #333;
-      padding: 20px;
-      text-align: center;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
+        /* Header styling */
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
 
-    header h1 {
-      font-size: 2.5rem;
-      font-weight: bold;
-      color: #ff6f61;
-    }
+        /* Video player section */
+        .video-player {
+            margin-bottom: 30px;
+            text-align: center;
+        }
 
-    main {
-      padding: 20px;
-    }
+        #main-video {
+            width: 100%;
+            height: 500px;
+            border-radius: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
 
-    .video-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 20px;
-    }
+        /* Saved videos list */
+        .video-list {
+            margin-top: 20px;
+        }
 
-    .video-card {
-      background-color: #2c2c2c;
-      border-radius: 10px;
-      overflow: hidden;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
+        #saved-videos {
+            list-style-type: none;
+            padding: 0;
+        }
 
-    .video-card:hover {
-      transform: translateY(-10px);
-      box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
-    }
+        #saved-videos li {
+            background: rgba(255, 255, 255, 0.1);
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
 
-    .video-card img {
-      width: 100%;
-      height: 200px;
-      object-fit: cover;
-    }
+        #saved-videos li:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
 
-    .video-card .info {
-      padding: 15px;
-    }
+        /* Add video section */
+        .add-video {
+            margin-top: 30px;
+        }
 
-    .video-card h3 {
-      font-size: 1.2rem;
-      margin-bottom: 10px;
-      color: #ff6f61;
-    }
+        #video-url {
+            width: calc(100% - 22px);
+            padding: 12px;
+            margin-bottom: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
 
-    .video-card p {
-      font-size: 0.9rem;
-      color: #b3b3b3;
-    }
+        #add-video-btn {
+            width: 100%;
+            padding: 12px;
+            background: #2575fc;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
 
-    .video-card a {
-      display: inline-block;
-      margin-top: 10px;
-      padding: 8px 15px;
-      background-color: #ff6f61;
-      color: #ffffff;
-      text-decoration: none;
-      border-radius: 5px;
-      transition: background-color 0.3s ease;
-    }
+        #add-video-btn:hover {
+            background: #1b5bbf;
+        }
 
-    .video-card a:hover {
-      background-color: #e65a50;
-    }
+        /* Responsive design */
+        @media (max-width: 768px) {
+            #main-video {
+                height: 300px;
+            }
 
-    footer {
-      text-align: center;
-      padding: 20px;
-      background-color: #333;
-      margin-top: 40px;
-      box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
-    }
-
-    footer p {
-      font-size: 0.9rem;
-      color: #b3b3b3;
-    }
-
-    /* Additional Styles for Over 1000 Lines */
-    .search-bar {
-      margin: 20px 0;
-      text-align: center;
-    }
-
-    .search-bar input {
-      padding: 10px;
-      width: 300px;
-      border: none;
-      border-radius: 5px;
-      font-size: 1rem;
-    }
-
-    .search-bar button {
-      padding: 10px 20px;
-      background-color: #ff6f61;
-      color: #ffffff;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 1rem;
-      margin-left: 10px;
-    }
-
-    .search-bar button:hover {
-      background-color: #e65a50;
-    }
-
-    .loading {
-      text-align: center;
-      font-size: 1.2rem;
-      color: #ff6f61;
-      margin: 20px 0;
-    }
-
-    .error {
-      text-align: center;
-      font-size: 1.2rem;
-      color: #ff6f61;
-      margin: 20px 0;
-    }
-
-    .pagination {
-      display: flex;
-      justify-content: center;
-      margin: 20px 0;
-    }
-
-    .pagination button {
-      padding: 10px 20px;
-      background-color: #ff6f61;
-      color: #ffffff;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 1rem;
-      margin: 0 5px;
-    }
-
-    .pagination button:hover {
-      background-color: #e65a50;
-    }
-
-    .pagination button:disabled {
-      background-color: #b3b3b3;
-      cursor: not-allowed;
-    }
-
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.8);
-      justify-content: center;
-      align-items: center;
-    }
-
-    .modal-content {
-      background-color: #2c2c2c;
-      padding: 20px;
-      border-radius: 10px;
-      max-width: 600px;
-      width: 100%;
-      text-align: center;
-    }
-
-    .modal-content img {
-      width: 100%;
-      height: auto;
-      border-radius: 10px;
-    }
-
-    .modal-content h3 {
-      font-size: 1.5rem;
-      margin: 15px 0;
-      color: #ff6f61;
-    }
-
-    .modal-content p {
-      font-size: 1rem;
-      color: #b3b3b3;
-    }
-
-    .modal-content button {
-      padding: 10px 20px;
-      background-color: #ff6f61;
-      color: #ffffff;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 1rem;
-      margin-top: 15px;
-    }
-
-    .modal-content button:hover {
-      background-color: #e65a50;
-    }
-  </style>
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
 </head>
 <body>
-  <header>
-    <h1>DoodStream Video Gallery</h1>
-  </header>
+    <div class="container">
+        <h1>Advanced Video Player</h1>
 
-  <main>
-    <div class="search-bar">
-      <input type="text" id="search-input" placeholder="Search videos...">
-      <button id="search-button">Search</button>
+        <!-- Video Player -->
+        <div class="video-player">
+            <iframe id="main-video" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+
+        <!-- Saved Videos List -->
+        <div class="video-list">
+            <h2>Saved Videos</h2>
+            <ul id="saved-videos"></ul>
+        </div>
+
+        <!-- Add Video Section -->
+        <div class="add-video">
+            <h2>Add a Video</h2>
+            <input type="text" id="video-url" placeholder="Enter video URL or embed code">
+            <button id="add-video-btn">Add Video</button>
+        </div>
     </div>
 
-    <div class="loading" id="loading">Loading videos...</div>
-    <div class="error" id="error" style="display: none;">Failed to load videos. Please try again later.</div>
+    <script>
+        // Load saved videos from localStorage
+        let savedVideos = JSON.parse(localStorage.getItem('savedVideos')) || [];
 
-    <div class="video-grid" id="video-grid">
-      <!-- Video cards will be dynamically inserted here -->
-    </div>
+        // DOM Elements
+        const mainVideo = document.getElementById('main-video');
+        const videoUrlInput = document.getElementById('video-url');
+        const addVideoBtn = document.getElementById('add-video-btn');
+        const savedVideosList = document.getElementById('saved-videos');
 
-    <div class="pagination" id="pagination">
-      <button id="prev-page" disabled>Previous</button>
-      <button id="next-page">Next</button>
-    </div>
-  </main>
-
-  <footer>
-    <p>&copy; 2023 DoodStream Video Gallery. All rights reserved.</p>
-  </footer>
-
-  <div class="modal" id="modal">
-    <div class="modal-content">
-      <img id="modal-image" src="" alt="">
-      <h3 id="modal-title"></h3>
-      <p id="modal-description"></p>
-      <button id="close-modal">Close</button>
-    </div>
-  </div>
-
-  <script>
-    // Replace with your DoodStream API key
-    const API_KEY = 'YOUR_API_KEY_HERE';
-    let currentPage = 1;
-
-    // Fetch videos from DoodStream API
-    async function fetchVideos(page = 1, searchTerm = '') {
-      try {
-        document.getElementById('loading').style.display = 'block';
-        document.getElementById('error').style.display = 'none';
-
-        const response = await fetch(
-          `https://doodapi.com/api/file/list?key=${API_KEY}&page=${page}&per_page=10${
-            searchTerm ? `&search_term=${searchTerm}` : ''
-          }`
-        );
-        const data = await response.json();
-
-        if (data.status === 200 && data.result.files) {
-          displayVideos(data.result.files);
-          updatePagination(data.result.total_pages);
-        } else {
-          throw new Error(data.msg || 'Failed to fetch videos');
+        // Function to update the saved videos list
+        function updateSavedVideosList() {
+            savedVideosList.innerHTML = '';
+            savedVideos.forEach((video, index) => {
+                const li = document.createElement('li');
+                li.textContent = `Video ${index + 1}`;
+                li.addEventListener('click', () => {
+                    mainVideo.src = video;
+                });
+                savedVideosList.appendChild(li);
+            });
         }
-      } catch (error) {
-        console.error('Error fetching videos:', error);
-        document.getElementById('error').style.display = 'block';
-      } finally {
-        document.getElementById('loading').style.display = 'none';
-      }
-    }
 
-    // Display videos on the page
-    function displayVideos(videos) {
-      const videoGrid = document.getElementById('video-grid');
-      videoGrid.innerHTML = videos
-        .map(
-          (video) => `
-            <div class="video-card">
-              <img src="${video.single_img}" alt="${video.title}">
-              <div class="info">
-                <h3>${video.title}</h3>
-                <p>Uploaded: ${video.uploaded}</p>
-                <p>Views: ${video.views}</p>
-                <a href="${video.download_url}" target="_blank">Watch Now</a>
-              </div>
-            </div>
-          `
-        )
-        .join('');
-    }
+        // Function to add a new video
+        function addVideo() {
+            const videoUrl = videoUrlInput.value.trim();
+            if (videoUrl) {
+                savedVideos.push(videoUrl);
+                localStorage.setItem('savedVideos', JSON.stringify(savedVideos));
+                updateSavedVideosList();
+                videoUrlInput.value = '';
+            } else {
+                alert('Please enter a valid video URL or embed code.');
+            }
+        }
 
-    // Update pagination buttons
-    function updatePagination(totalPages) {
-      const prevButton = document.getElementById('prev-page');
-      const nextButton = document.getElementById('next-page');
+        // Event listener for the add video button
+        addVideoBtn.addEventListener('click', addVideo);
 
-      prevButton.disabled = currentPage === 1;
-      nextButton.disabled = currentPage === totalPages;
-    }
-
-    // Initialize the page
-    fetchVideos(currentPage);
-
-    // Event listeners
-    document.getElementById('search-button').addEventListener('click', () => {
-      const searchTerm = document.getElementById('search-input').value;
-      fetchVideos(1, searchTerm);
-    });
-
-    document.getElementById('prev-page').addEventListener('click', () => {
-      if (currentPage > 1) {
-        currentPage--;
-        fetchVideos(currentPage);
-      }
-    });
-
-    document.getElementById('next-page').addEventListener('click', () => {
-      currentPage++;
-      fetchVideos(currentPage);
-    });
-  </script>
+        // Load saved videos when the page loads
+        window.addEventListener('load', () => {
+            updateSavedVideosList();
+            if (savedVideos.length > 0) {
+                mainVideo.src = savedVideos[0];
+            }
+        });
+    </script>
 </body>
 </html>
