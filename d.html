@@ -139,8 +139,21 @@
     </div>
 
     <script>
-        // Load saved videos from localStorage
-        let savedVideos = JSON.parse(localStorage.getItem('savedVideos')) || [];
+        // Preloaded embedded links
+        let savedVideos = [
+            "https://do7go.com/e/whv3lhsnojkc",
+            "https://do7go.com/e/0y9sknipzic8",
+            "https://do7go.com/e/zzbge96phjd4",
+            "https://do7go.com/e/fi08t1qdcnw2",
+            "https://do7go.com/e/04k52uele17f",
+            "https://do7go.com/e/uwdbt45j54s3",
+            "https://do7go.com/e/1ri83ssob6x3",
+            "https://do7go.com/e/hxmavh7ou1ie",
+            "https://do7go.com/e/jsaanao2frxr"
+        ];
+
+        // Save preloaded videos to localStorage
+        localStorage.setItem('savedVideos', JSON.stringify(savedVideos));
 
         // DOM Elements
         const mainVideo = document.getElementById('main-video');
