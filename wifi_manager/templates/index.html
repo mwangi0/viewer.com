@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universal Video Downloader</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        #input-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        #url {
+            flex: 1;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 20px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        #preview {
+            margin-top: 20px;
+            text-align: center;
+            display: none;
+        }
+        #thumbnail {
+            max-width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        #quality {
+            padding: 8px;
+            font-size: 16px;
+            margin: 10px 0;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        #error {
+            color: red;
+            text-align: center;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Universal Video Downloader</h1>
+    <div id="input-container">
+        <input type="text" id="url" placeholder="Paste YouTube, Twitter, Instagram, TikTok...">
+        <button onclick="fetchInfo()">Preview</button>
+    </div>
+    <div id="error"></div>
+    <div id="preview">
+        <img id="thumbnail" src="" alt="Video Thumbnail">
+        <div>
+            <select id="quality">
+                <option value="best">Best Quality</option>
+                <option value="worst">Lowest Quality</option>
+                <option value="mp3">MP3 (Audio Only)</option>
+            </select>
+            <button onclick="download()">Download</button>
+        </div>
+    </div>
+
+    <script>
+        async function fetchInfo() {
+            const url = document.getElementById('url').value;
+            const errorElement = document.getElementById('error');
+            errorElement.textContent = '';
+
+            if (!url) {
+                errorElement.textContent = 'Please enter a URL.';
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/info', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url })
+                });
+                const data = await response.json();
+
+                if (data.thumbnail) {
+                    document.getElementById('thumbnail').src = data.thumbnail;
+                    document.getElementById('preview').style.display = 'block';
+                } else {
+                    errorElement.textContent = 'No thumbnail found. Unsupported URL?';
+                }
+            } catch (err) {
+                errorElement.textContent = 'Error fetching video info.';
+            }
+        }
+
+        function download() {
+            const url = document.getElementById('url').value;
+            const quality = document.getElementById('quality').value;
+            window.open(`/api/download?url=${encodeURIComponent(url)}&quality=${quality}`, '_blank');
+        }
+    </script>
+</body>
+</html>
